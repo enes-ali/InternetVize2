@@ -1,6 +1,8 @@
-﻿namespace InternetVize.Models
+﻿using InternetVize.Models;
+
+namespace InternetVize.Dtos
 {
-    public class RentalProfile
+    public class RentalProfileDto
     {
         public int Id { get; set; }
         public string UserId { get; set; }
@@ -8,7 +10,6 @@
         public string TaxNumber { get; set; }
         public string CompanyName { get; set; }
         public string LogoUrl { get; set; }
-        public ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
-        public ICollection<Address> Addresses { get; set; } = new List<Address>();
+        public List<Models.Vehicle> Vehicles { get; set; } = new List<Models.Vehicle>();
     }
 }

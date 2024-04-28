@@ -1,15 +1,13 @@
-﻿namespace InternetVize.Models
+﻿namespace InternetVize.Dtos.Address
 {
-    public class Address
+    public class CreateAddressDto
     {
-        public int Id { get; set; }
+        public int RentalProfileId {  get; set; }
         public string City { get; set; }
         public string District { get; set; }
         public string Neighboorhood { get; set; }
         public string Street { get; set; }
         public string PostalCode { get; set; }
         public string AddressLine { get; set; }
-        public ICollection<Vehicle> Vehicles { get; set; }
-        public int RentalProfileId { get; set; }
     }
 }

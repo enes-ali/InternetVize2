@@ -1,6 +1,8 @@
-﻿namespace InternetVize.Models
+﻿using InternetVize.Models;
+
+namespace InternetVize.Dtos.Address
 {
-    public class Address
+    public class AddressDto
     {
         public int Id { get; set; }
         public string City { get; set; }
@@ -9,7 +11,6 @@
         public string Street { get; set; }
         public string PostalCode { get; set; }
         public string AddressLine { get; set; }
-        public ICollection<Vehicle> Vehicles { get; set; }
-        public int RentalProfileId { get; set; }
+        public ICollection<Models.Vehicle> Vehicles { get; set; }
     }
 }
