@@ -30,16 +30,29 @@ namespace InternetVize.Models
                 .IsRequired(false);
 
             builder.Entity<BuyerProfile>()
-                    .HasOne(bp => bp.User)
-                    .WithOne(user => user.BuyerProfile)
-                    .HasForeignKey<BuyerProfile>(bp => bp.UserId)
-                    .IsRequired(true);
+                .HasOne(bp => bp.User)
+                .WithOne(user => user.BuyerProfile)
+                .HasForeignKey<BuyerProfile>(bp => bp.UserId)
+                .IsRequired(true);
 
             builder.Entity<RentalProfile>()
-                    .HasOne(rp => rp.User)
-                    .WithOne(user => user.RentalProfile)
-                    .HasForeignKey<RentalProfile>(rp => rp.UserId)
-                    .IsRequired(true);
+                .HasOne(rp => rp.User)
+                .WithOne(user => user.RentalProfile)
+                .HasForeignKey<RentalProfile>(rp => rp.UserId)
+                .IsRequired(true);
+
+            builder.Entity<Address>()
+                .HasOne(adr => adr.RentalProfile)
+                .WithMany(rp => rp.Addresses)
+                .HasForeignKey (adr => adr.RentalProfileId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Vehicle>()
+                .HasOne(vc => vc.RentalProfile)
+                .WithMany(rp => rp.Vehicles)
+                .HasForeignKey(vc => vc.RentalProfileId)
+                .IsRequired(true)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

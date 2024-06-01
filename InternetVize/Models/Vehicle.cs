@@ -27,7 +27,7 @@
         public uint Deposit {  get; set; }
         public decimal DailyRate {  get; set; }
         public string PictureUrl {  get; set; }
-        public int AddressId {  get; set; }
-        public Address Address { get; set; }
+        public int? AddressId {  get; set; }
+        public Address? Address { get; set; }
     }
 }

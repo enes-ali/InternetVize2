@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InternetVize.Controllers
 {
+    [Route("api/Address")]
+    [ApiController]
     public class AddressController : Controller
     {
         private readonly ILogger<UserController> _logger;
@@ -32,7 +34,7 @@ namespace InternetVize.Controllers
             return response;
         }
 
-        [HttpPost]
+        [HttpDelete]
         public ResponseDto DeleteAddress(int id)
         {
             var address = new Address() { Id = id };

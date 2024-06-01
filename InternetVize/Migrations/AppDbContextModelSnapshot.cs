@@ -50,7 +50,7 @@ namespace InternetVize.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RentalProfileId")
+                    b.Property<int?>("RentalProfileId")
                         .HasColumnType("int");
 
                     b.Property<string>("Street")
@@ -282,7 +282,7 @@ namespace InternetVize.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AddressId")
+                    b.Property<int?>("AddressId")
                         .HasColumnType("int");
 
                     b.Property<string>("Brand")
@@ -435,11 +435,12 @@ namespace InternetVize.Migrations
 
             modelBuilder.Entity("InternetVize.Models.Address", b =>
                 {
-                    b.HasOne("InternetVize.Models.RentalProfile", null)
+                    b.HasOne("InternetVize.Models.RentalProfile", "RentalProfile")
                         .WithMany("Addresses")
                         .HasForeignKey("RentalProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("RentalProfile");
                 });
 
             modelBuilder.Entity("InternetVize.Models.BuyerProfile", b =>
@@ -491,14 +492,12 @@ namespace InternetVize.Migrations
                 {
                     b.HasOne("InternetVize.Models.Address", "Address")
                         .WithMany("Vehicles")
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AddressId");
 
                     b.HasOne("InternetVize.Models.RentalProfile", "RentalProfile")
                         .WithMany("Vehicles")
                         .HasForeignKey("RentalProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Address");

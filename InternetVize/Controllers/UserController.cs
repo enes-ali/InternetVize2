@@ -10,6 +10,8 @@ using System.Text;
 
 namespace InternetVize.Controllers
 {
+    [Route("api/User/[action]")]
+    [ApiController]
     public class UserController : Controller
     {
         private readonly UserManager<User> _userManager;
@@ -48,8 +50,8 @@ namespace InternetVize.Controllers
         [Route("{id}")]
         public UserDto ByUserId(string id)
         {
-            var user = _appDbContext.Users.First(user => user.Id == id);
-
+            var user = _userManager.Users.Where(user => user.Id == id).SingleOrDefault();
+            
             return _mapper.Map<UserDto>(user);
         }
 
@@ -84,6 +86,57 @@ namespace InternetVize.Controllers
             }
         }
 
+
+        [HttpPut]
+        public ResponseDto UpdateBuyerProfile(UpdateBuyerProfileDto updateDto)
+        {
+            var profile = _appDbContext.BuyerProfiles.Where(profile => profile.Id == updateDto.Id).FirstOrDefault();
+            if (profile == null)
+            {
+                response.Succeded = false;
+                response.Body = "Couldnt find a buyer profile with the provided Id";
+                return response;
+            }
+
+            var user = _userManager.Users.Where(usr => usr.Id == profile.UserId).FirstOrDefault();
+
+            if (updateDto.FirstName != null)
+            {
+                user.FirstName = (string)updateDto.FirstName;
+            }
+
+            if (updateDto.LastName != null)
+            {
+                user.LastName = (string)updateDto.LastName;
+            }
+
+            if (updateDto.Email != null)
+            {
+                user.Email = (string)updateDto.Email;
+            }
+
+            if (updateDto.PhoneNumber != null)
+            {
+                user.PhoneNumber = (string)updateDto.PhoneNumber;
+            }
+
+            if (updateDto.DateOfBirth != null)
+            {
+                user.DateOfBirth = (DateTime)updateDto.DateOfBirth;
+            }
+
+            if (updateDto.IdNumber != null)
+            {
+                profile.IdNumber = (string)updateDto.IdNumber;
+            }
+
+            _appDbContext.SaveChanges();
+
+            response.Succeded = true;
+            response.Body = "Profile updated successfully";
+            return response;
+        }
+
         [HttpPost]
         public async Task<ResponseDto> RegisterBuyerProfile(BuyerRegisterDto registerDto)
         {
@@ -115,6 +168,7 @@ namespace InternetVize.Controllers
             }
         }
 
+        [HttpPost]
         public async Task<ResponseDto> SignIn(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);

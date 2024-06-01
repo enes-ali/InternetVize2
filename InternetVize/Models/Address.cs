@@ -10,6 +10,7 @@
         public string PostalCode { get; set; }
         public string AddressLine { get; set; }
         public ICollection<Vehicle> Vehicles { get; set; }
-        public int RentalProfileId { get; set; }
+        public int? RentalProfileId { get; set; }
+        public RentalProfile? RentalProfile { get; set; }
     }
 }
