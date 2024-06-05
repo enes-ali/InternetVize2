@@ -2,7 +2,8 @@
 {
     public class CreateAddressDto
     {
-        public int RentalProfileId {  get; set; }
+        public string UserId {  get; set; }
+        public int? RentalProfileId { get; set; }
         public string City { get; set; }
         public string District { get; set; }
         public string Neighboorhood { get; set; }

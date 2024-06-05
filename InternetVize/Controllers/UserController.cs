@@ -7,6 +7,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using InternetVize.Dtos.Rent;
 
 namespace InternetVize.Controllers
 {
@@ -22,7 +24,13 @@ namespace InternetVize.Controllers
         private readonly IConfiguration _configuration;
         ResponseDto response = new ResponseDto();
 
-        public UserController(UserManager<User> userManager, RoleManager<Role> roleManager, ILogger<UserController> logger, IMapper mapper, AppDbContext appDbContext, IConfiguration config)
+        public UserController(
+            UserManager<User> userManager, 
+            RoleManager<Role> roleManager, 
+            ILogger<UserController> logger, 
+            IMapper mapper, 
+            AppDbContext appDbContext,
+            IConfiguration config)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -60,6 +68,7 @@ namespace InternetVize.Controllers
         {
             try
             {
+                registerDto.DateOfBirth = DateTime.Parse(registerDto.DateOfBirthISO, null, System.Globalization.DateTimeStyles.RoundtripKind);
                 var newUserId = await CreateIdentityUser(registerDto, "rental");
 
                 if (_appDbContext.RentalProfiles.Count(profile => profile.CompanyName == registerDto.CompanyName) > 0)
@@ -86,6 +95,76 @@ namespace InternetVize.Controllers
             }
         }
 
+        private async Task<bool> UpdateUser(string UserId, UpdateUserDto updateDto) {
+            var user = _userManager.Users.Where(usr => usr.Id == UserId).FirstOrDefault();
+
+            if (updateDto.FirstName != null)
+            {
+                user.FirstName = (string)updateDto.FirstName;
+            }
+
+            if (updateDto.LastName != null)
+            {
+                user.LastName = (string)updateDto.LastName;
+            }
+
+            if (updateDto.Email != null)
+            {
+                user.Email = (string)updateDto.Email;
+            }
+
+            if(updateDto.Password != null) {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                await _userManager.ResetPasswordAsync(user, token, updateDto.Password);
+            }
+
+            if (updateDto.PhoneNumber != null)
+            {
+                user.PhoneNumber = (string)updateDto.PhoneNumber;
+            }
+
+            if (updateDto.DateOfBirth != null)
+            {
+                user.DateOfBirth = (DateTime)updateDto.DateOfBirth;
+            }
+
+            return true;
+        }
+
+        [HttpPut]
+        public async Task<ResponseDto> UpdateRentalProfile(UpdateRentalProfileDto updateDto)
+        {
+            var profile = _appDbContext.RentalProfiles.Where(profile => profile.Id == updateDto.Id).FirstOrDefault();
+            if (profile == null)
+            {
+                response.Succeded = false;
+                response.Body = "Couldnt find a rental profile with the provided Id";
+                return response;
+            }
+
+            await UpdateUser(profile.UserId, updateDto);
+
+            if (updateDto.TaxNumber != null)
+            {
+                profile.TaxNumber = (string)updateDto.TaxNumber;
+            }
+
+            if (updateDto.CompanyName != null)
+            {
+                profile.CompanyName = (string)updateDto.CompanyName;
+            }
+
+            if (updateDto.LogoUrl != null)
+            {
+                profile.LogoUrl = (string)updateDto.LogoUrl;
+            }
+
+            _appDbContext.SaveChanges();
+
+            response.Succeded = true;
+            response.Body = "Profile updated successfully";
+            return response;
+        }
 
         [HttpPut]
         public ResponseDto UpdateBuyerProfile(UpdateBuyerProfileDto updateDto)
@@ -142,6 +221,7 @@ namespace InternetVize.Controllers
         {
             try
             {
+                registerDto.DateOfBirth = DateTime.Parse(registerDto.DateOfBirthISO, null, System.Globalization.DateTimeStyles.RoundtripKind);
                 var newUserId = await CreateIdentityUser(registerDto, "buyer");
 
                 if (_appDbContext.BuyerProfiles.Count(profile => profile.IdNumber == registerDto.IdNumber) > 0)
@@ -169,10 +249,10 @@ namespace InternetVize.Controllers
         }
 
         [HttpPost]
-        public async Task<ResponseDto> SignIn(LoginDto loginDto)
+        public async Task<SignInDto> SignIn(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
-
+            var response = new SignInDto() {};
             if (user == null) {
                 response.Body = "Couldn't find a user with the provided email";
                 response.Succeded = false;
@@ -204,6 +284,7 @@ namespace InternetVize.Controllers
 
             response.Succeded = true;
             response.Body = token;
+            response.UserId = user.Id;
             return response;
         }
 
